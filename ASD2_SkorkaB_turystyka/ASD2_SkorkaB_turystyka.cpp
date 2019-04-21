@@ -16,10 +16,9 @@ private:
 	};
 
 	std::vector<Vertice> _vertices;
-	int _tourists;
 
 public:
-	Node() : _vertices(0), _tourists(0) {};
+	Node() : _vertices(0) {};
 	~Node() {};
 	Node(const Node& cpy)
 	{
@@ -52,14 +51,23 @@ public:
 		{
 
 			int tempFirst = _vertices.at(index)._neighbor.at(i).first;
-			if (_vertices.at(tempFirst)._visited != true)
-			{
+			
+				//wartosc drogi
 				int tempSecond = _vertices.at(index)._neighbor.at(i).second;
+				//node poczatkowy
 				int tempValueStart = _vertices.at(index)._value;
+				//node koncowy
 				int tempValueEnd = _vertices.at(tempFirst)._value;
 
-				_vertices.at(tempFirst)._value = getHigher(getLower(tempValueStart, tempSecond), tempValueEnd);
-			}
+				int calculate = getHigher(getLower(tempValueStart, tempSecond), tempValueEnd);
+				if (tempValueEnd < calculate && _vertices.at(tempFirst)._visited == true)
+				{
+					_vertices.at(tempFirst)._value = calculate;
+					find(tempFirst);
+				}
+				else
+					_vertices.at(tempFirst)._value = calculate;
+			
 		}
 		_vertices.at(index)._visited = true;
 
@@ -67,6 +75,15 @@ public:
 		{
 			if (_vertices.at(_vertices.at(index)._neighbor.at(i).first)._visited != true)
 				find(_vertices.at(index)._neighbor.at(i).first);
+		}
+	}
+
+	void reset()
+	{
+		for (auto &x : _vertices)
+		{
+			x._visited = false;
+			x._value = -1;
 		}
 	}
 
@@ -105,17 +122,20 @@ public:
 		{
 			std::cin >> value;
 
-			_vertices.at(v1)._value = MAX_INT;		
+			reset();
 
+			_vertices.at(v1)._value = MAX_INT;		
 			find(v1);
 
 			int val = _vertices.at(v2)._value - 1;
 			int result = value / val;
 
-			std::cout << (value % val == 0 || val + 1 == MAX_INT ? result :	result + 1) << '\n';
+			std::cout << (value % val == 0 || val + 1 == MAX_INT ? result :	result + 1);
 
 			std::cin >> v1;
 			std::cin >> v2;
+
+			if (v1 != 0 && v2 != 0) std::cout << '\n';
 		}
 	}	
 };
